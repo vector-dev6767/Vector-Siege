@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Vector Siege - a free neon arcade shooter that runs in your browser. No install, no account.">
+<meta property="og:title" content="Vector Siege">
+<meta property="og:description" content="Vector Siege - a free neon arcade shooter that runs in your browser. No install, no account.">
+<meta property="og:type" content="website">
+<style>
+  :root{ padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body{ margin:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+</style>
+<title>Vector Siege</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#05070F;
+    --void:#090E1E;
+    --panel:#0B1124;
+    --grid:#17224C;
+    --line:#1E2B58;
+    --cyan:#3FE8FF;
+    --magenta:#FF2E88;
+    --amber:#FFC24B;
+    --violet:#B36BFF;
+    --lime:#6BF2A0;
+    --orange:#FF7A3D;
+    --ice:#7FB4FF;
+    --text:#CFDCFF;
+    --bright:#EAF3FF;
+    --dim:#6C7CA9;
+    --display:"Chakra Petch","Bahnschrift","Arial Narrow",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:14px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;}
+  h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;line-height:1.02;}
+  a{color:var(--cyan);}
+  .eyebrow{
+    font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);
+    display:block;margin-bottom:14px;
+  }
+
+  /* ---------- hero ---------- */
+  header{
+    position:relative;
+    border-bottom:1px solid var(--grid);
+    overflow:hidden;
+  }
+  #sky{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .heroveil{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(90% 60% at 50% 0%, rgba(63,232,255,.13), rgba(5,7,15,0) 60%),
+      linear-gradient(180deg, rgba(5,7,15,.35) 0%, rgba(5,7,15,.82) 78%, var(--bg) 100%);
+    pointer-events:none;
+  }
+  .hero{
+    position:relative;
+    padding-block:78px 62px;
+    text-align:center;
+  }
+  .logo{
+    font-size:clamp(46px,12vw,104px);
+    letter-spacing:.015em;
+    color:var(--bright);
+    text-shadow:0 0 40px rgba(63,232,255,.45), 0 0 3px rgba(255,46,136,.7);
+  }
+  .logo span{color:var(--magenta);text-shadow:0 0 40px rgba(255,46,136,.5);}
+  .tagline{
+    max-width:52ch;margin:20px auto 0;
+    font-size:15px;color:var(--text);
+  }
+  .ctarow{
+    display:flex;gap:12px;justify-content:center;align-items:center;
+    margin-top:32px;flex-wrap:wrap;
+  }
+  .play{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--display);font-weight:700;
+    font-size:17px;letter-spacing:.2em;text-transform:uppercase;
+    color:#04121A;
+    background:var(--cyan);
+    text-decoration:none;
+    padding:16px 34px;
+    clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+    box-shadow:0 0 44px rgba(63,232,255,.42);
+    transition:background .15s, box-shadow .15s;
+  }
+  .play:hover{background:#8AF3FF;box-shadow:0 0 60px rgba(63,232,255,.6);}
+  .play:focus-visible{outline:3px solid #fff;outline-offset:3px;}
+  .ghost{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dim);text-decoration:none;
+    border:1px solid var(--grid);padding:15px 20px;
+  }
+  .ghost:hover{color:var(--cyan);border-color:var(--cyan);}
+  .meta{
+    margin-top:22px;
+    font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#4E5C85;
+  }
+
+  /* ---------- stat strip ---------- */
+  .strip{
+    border-bottom:1px solid var(--grid);
+    background:var(--void);
+  }
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    text-align:center;
+  }
+  .stat{padding:22px 10px;border-left:1px solid var(--grid);}
+  .stat:first-child{border-left:0;}
+  .stat b{
+    display:block;font-family:var(--display);font-weight:700;font-size:26px;
+    color:var(--cyan);font-variant-numeric:tabular-nums;line-height:1;
+  }
+  .stat i{
+    display:block;font-style:normal;margin-top:7px;
+    font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+  }
+  .stat:nth-child(2) b{color:var(--magenta);}
+  .stat:nth-child(3) b{color:var(--amber);}
+  .stat:nth-child(4) b{color:var(--lime);}
+
+  /* ---------- sections ---------- */
+  section{padding-block:72px;border-bottom:1px solid var(--grid);}
+  .shead{margin-bottom:34px;}
+  .shead h2{font-size:clamp(26px,5vw,38px);color:var(--bright);}
+  .shead p{margin:12px 0 0;max-width:62ch;color:var(--dim);font-size:13.5px;}
+
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .card{
+    border:1px solid var(--grid);
+    border-top:2px solid currentColor;
+    background:var(--panel);
+    padding:20px 18px;
+  }
+  .card h3{font-size:16px;letter-spacing:.04em;color:currentColor;margin-bottom:9px;}
+  .card p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.75;}
+
+  /* ---------- roster ---------- */
+  .roster{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .foe{
+    border:1px solid var(--grid);
+    background:var(--panel);
+    padding:16px 12px;
+    text-align:center;
+  }
+  .foe svg{display:block;margin:0 auto 10px;}
+  .foe b{
+    display:block;font-family:var(--display);font-weight:700;font-size:14px;
+    color:var(--bright);letter-spacing:.04em;
+  }
+  .foe i{
+    display:block;font-style:normal;margin-top:5px;
+    font-size:10px;color:var(--dim);line-height:1.6;
+  }
+  .foe.big{grid-column:span 4;display:flex;align-items:center;gap:18px;text-align:left;padding:20px;}
+  .foe.big svg{margin:0;flex:0 0 auto;}
+  .foe.big i{margin-top:6px;font-size:11.5px;}
+
+  /* ---------- loot ---------- */
+  .loot{display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:start;}
+  .lootcard{border:1px solid var(--grid);background:var(--panel);padding:20px;}
+  .odds{display:flex;flex-direction:column;gap:7px;margin-top:14px;}
+  .odd{display:flex;align-items:center;gap:10px;font-size:11.5px;}
+  .odd em{
+    font-style:normal;width:38px;text-align:right;
+    color:var(--bright);font-weight:600;font-variant-numeric:tabular-nums;
+  }
+  .gem{
+    width:12px;height:12px;flex:0 0 auto;
+    background:currentColor;
+    clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+    box-shadow:0 0 9px currentColor;
+  }
+  .odd span{letter-spacing:.1em;text-transform:uppercase;font-size:10px;}
+  .upg{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .upgrow{
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    border-bottom:1px dashed var(--line);padding-bottom:9px;
+  }
+  .upgrow b{font-family:var(--display);font-size:14px;color:var(--bright);font-weight:700;}
+  .upgrow span{font-size:11px;color:var(--dim);text-align:right;}
+
+  /* ---------- controls ---------- */
+  .keys{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 26px;}
+  .keyrow{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--dim);}
+  kbd{
+    font-family:var(--mono);font-size:10px;font-weight:600;
+    color:var(--bright);background:var(--void);
+    border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:3px;padding:5px 9px;white-space:nowrap;
+  }
+
+  /* ---------- closing ---------- */
+  .final{text-align:center;border-bottom:0;}
+  .final h2{font-size:clamp(28px,6vw,46px);color:var(--bright);}
+  .final p{color:var(--dim);max-width:46ch;margin:14px auto 0;}
+  footer{
+    padding-block:26px;
+    text-align:center;
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#3D4870;
+    border-top:1px solid var(--grid);
+  }
+
+  @media (max-width:820px){
+    .feat{grid-template-columns:1fr 1fr;}
+    .roster{grid-template-columns:repeat(2,1fr);}
+    .foe.big{grid-column:span 2;}
+    .loot{grid-template-columns:1fr;}
+  }
+  @media (max-width:560px){
+    .stats{grid-template-columns:1fr 1fr;}
+    .stat:nth-child(3){border-left:0;}
+    .stat:nth-child(n+3){border-top:1px solid var(--grid);}
+    .feat{grid-template-columns:1fr;}
+    .keys{grid-template-columns:1fr;}
+    .foe.big{flex-direction:column;text-align:center;}
+    section{padding-block:52px;}
+    .hero{padding-block:58px 48px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .play{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <canvas id="sky"></canvas>
+  <div class="heroveil"></div>
+  <div class="hero wrap">
+    <span class="eyebrow">Sector 7 · Orbital Defense</span>
+    <h1 class="logo">VECTOR <span>SIEGE</span></h1>
+    <p class="tagline">A neon arcade shooter about holding a line that keeps moving. Seven hostile classes, capital ships that refuse to die once, and a loadout you rebuild every single run.</p>
+    <div class="ctarow">
+      <a class="play" href="play.html">▶ Play free</a>
+      <a class="ghost" href="#hostiles">See the hostiles</a>
+    </div>
+    <p class="meta">Browser · No install · No account · Works offline</p>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><b>7</b><i>Hostile classes</i></div>
+      <div class="stat"><b>2</b><i>Boss phases</i></div>
+      <div class="stat"><b>38</b><i>Unlockable skins</i></div>
+      <div class="stat"><b>∞</b><i>Waves</i></div>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow">What you're getting into</span>
+      <h2>Every wave takes something back</h2>
+      <p>Drops get rarer the deeper you go, so the arsenal you build in wave three is not the one that saves you in wave fifteen. The pressure comes from scarcity, not from cheap shots.</p>
+    </div>
+    <div class="feat">
+      <div class="card" style="color:var(--cyan)">
+        <h3>Eight power-ups</h3>
+        <p>Spread cannons, piercing laser, homing missiles, wingman drones, shields, rapid fire, nukes and Overdrive. Every one changes how you hold the screen.</p>
+      </div>
+      <div class="card" style="color:var(--magenta)">
+        <h3>Wrecks detonate</h3>
+        <p>Every kill leaves a hulk burning on a three-second fuse. It chains through packed formations — and it will take your hull too if you linger.</p>
+      </div>
+      <div class="card" style="color:var(--amber)">
+        <h3>Capital ships</h3>
+        <p>Every fourth wave. A 250-point barrier, curtain fire with one gap that moves away from you, then a second phase at triple health.</p>
+      </div>
+      <div class="card" style="color:var(--lime)">
+        <h3>Supply line</h3>
+        <p>Stripped down mid-boss? Crates start dropping every five seconds — a full refit, on a countdown, in the middle of the fight.</p>
+      </div>
+      <div class="card" style="color:var(--violet)">
+        <h3>Training range</h3>
+        <p>Every hostile playable in a sandbox. Live fire, real health, no score. Learn the bomber's mine burst before it learns you.</p>
+      </div>
+      <div class="card" style="color:var(--ice)">
+        <h3>Steel cover</h3>
+        <p>Indestructible crates block every shot, yours included. In a boss's second phase they start teleporting, on a visible timer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="hostiles">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow">Threat library</span>
+      <h2>Know what's coming</h2>
+      <p>Four unarmed rammers and chargers, three that shoot back, and one that arrives with a shield and leaves in two pieces.</p>
+    </div>
+    <div class="roster">
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M0 13 L13 -6 L5 -11 L-5 -11 L-13 -6 Z" fill="#141C3C" stroke="#FF2E88" stroke-width="1.8"/><rect x="-2.5" y="-4" width="5" height="5" fill="#FF2E88"/></svg>
+        <b>Grunt</b><i>1 HP · unarmed<br>Weaves in and rams</i>
+      </div>
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M0 14 L8 -8 L0 -4 L-8 -8 Z" fill="#141C3C" stroke="#FF7A3D" stroke-width="1.8"/><circle cx="0" cy="4" r="2.4" fill="#FF7A3D"/></svg>
+        <b>Darter</b><i>3 HP · unarmed<br>Commits to one dive</i>
+      </div>
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M13.9 8 L0 16 L-13.9 8 L-13.9 -8 L0 -16 L13.9 -8 Z" fill="#141C3C" stroke="#B36BFF" stroke-width="1.8"/><circle cx="0" cy="0" r="4" fill="#B36BFF"/></svg>
+        <b>Turret</b><i>5 HP · aimed bolts<br>Up to a 5-way fan</i>
+      </div>
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M0 -17 L14.7 8.5 L-14.7 8.5 Z" fill="#141C3C" stroke="#6BF2A0" stroke-width="1.8"/><circle cx="0" cy="0" r="7" fill="none" stroke="#6BF2A0" stroke-width="1.2"/></svg>
+        <b>Splitter</b><i>5 HP · unarmed<br>Dies into two grunts</i>
+      </div>
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-22 -20 44 40" aria-hidden="true"><path d="M0 14 L14 4 L17 -6 L7 -10 L-7 -10 L-17 -6 L-14 4 Z" fill="#141C3C" stroke="#FFC24B" stroke-width="1.8"/><circle cx="0" cy="1" r="5" fill="#FFC24B"/></svg>
+        <b>Bomber</b><i>9 HP · cluster mines<br>Bursts 8 ways</i>
+      </div>
+      <div class="foe">
+        <svg width="46" height="46" viewBox="-20 -20 40 40" aria-hidden="true"><path d="M0 15 L12 2 L8 -12 L-8 -12 L-12 2 Z" fill="#141C3C" stroke="#7FB4FF" stroke-width="1.8"/><path d="M-7 -2 L7 -2" stroke="#7FB4FF" stroke-width="1.2"/><circle cx="0" cy="5" r="3" fill="#7FB4FF"/></svg>
+        <b>Interceptor</b><i>5 HP · aimed bolt<br>Fires while closing</i>
+      </div>
+      <div class="foe" style="display:flex;flex-direction:column;justify-content:center">
+        <b style="color:var(--dim);font-size:11px;letter-spacing:.2em">+ WRECKS</b>
+        <i>Every kill leaves a live bomb on the field</i>
+      </div>
+      <div class="foe" style="display:flex;flex-direction:column;justify-content:center">
+        <b style="color:var(--dim);font-size:11px;letter-spacing:.2em">+ CRATES</b>
+        <i>Cover that cannot be destroyed</i>
+      </div>
+      <div class="foe big">
+        <svg width="94" height="70" viewBox="-54 -32 108 80" aria-hidden="true">
+          <ellipse cx="0" cy="4" rx="52" ry="40" fill="rgba(127,180,255,.07)" stroke="#7FB4FF" stroke-width="1.4"/>
+          <path d="M0 42 L30 20 L50 24 L44 -6 L18 -26 L-18 -26 L-44 -6 L-50 24 L-30 20 Z" fill="#141C3C" stroke="#FF2E88" stroke-width="1.8"/>
+          <path d="M-30 4 L30 4" stroke="#FFC24B" stroke-width="1.2"/>
+          <circle cx="0" cy="8" r="9" fill="#FFC24B"/>
+          <circle cx="-30" cy="18" r="4" fill="#FF2E88"/><circle cx="30" cy="18" r="4" fill="#FF2E88"/>
+        </svg>
+        <div>
+          <b style="font-size:19px">Capital Ship</b>
+          <i>Arrives behind a 250-point barrier you have to break before anything lands. Fan spreads, twin aimed cannons, escort wings, and curtain fire that always leaves its gap somewhere you aren't. Enrages at 58%, melts down at 24% — then sheds its plating and comes back with <strong style="color:var(--amber)">triple the health</strong> and a fresh wing of interceptors every five seconds.</i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="loot">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow">Coins &amp; collection</span>
+      <h2>Everything you kill pays</h2>
+      <p>Coins drop from every kill and bank between runs. Spend them on permanent upgrades, or gamble them on cases with a twenty-second reel that lands where it lands.</p>
+    </div>
+    <div class="loot">
+      <div class="lootcard">
+        <span class="eyebrow" style="margin-bottom:8px">Neon case · 750 coins</span>
+        <h3 style="font-family:var(--display);font-size:18px;color:var(--bright)">Nine finishes, one spin</h3>
+        <div class="odds">
+          <div class="odd" style="color:#FF8AE8"><em>1%</em><span class="gem"></span><span style="color:#FF8AE8">Rainbow neon</span></div>
+          <div class="odd" style="color:#BFF4FF"><em>4%</em><span class="gem"></span><span style="color:#BFF4FF">Diamond neon</span></div>
+          <div class="odd" style="color:#FFD666"><em>7%</em><span class="gem"></span><span style="color:#FFD666">Gold neon</span></div>
+          <div class="odd" style="color:#C9D2E4"><em>10%</em><span class="gem"></span><span style="color:#C9D2E4">Silver neon</span></div>
+          <div class="odd" style="color:#5CFF9E"><em>15.6%</em><span class="gem"></span><span style="color:var(--dim)">each · five colours</span></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--dim);margin-top:16px;line-height:1.7">Rainbow cycles hue while you fly. Duplicates refund 150 coins. Hull and rounds collect separately — 38 skins in all.</p>
+      </div>
+      <div class="lootcard">
+        <span class="eyebrow" style="margin-bottom:8px">Permanent upgrades</span>
+        <h3 style="font-family:var(--display);font-size:18px;color:var(--bright)">Carry it between runs</h3>
+        <div class="upg">
+          <div class="upgrow"><b style="color:var(--lime)">Fortune</b><span>+6% drops per level<br>Richer capital ship loot</span></div>
+          <div class="upgrow"><b style="color:var(--magenta)">Warheads</b><span>+15% weapon damage<br>per level</span></div>
+          <div class="upgrow" style="border-bottom:0"><b style="color:var(--amber)">Salvage</b><span>+20% coins per kill<br>per level</span></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--dim);margin-top:16px;line-height:1.7">Fifteen levels each. Fifty coins for the first, then 50% more every time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="controls">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow">Controls</span>
+      <h2>Two hands or one thumb</h2>
+      <p>Keyboard on desktop, drag anywhere on mobile — the ship follows your finger and fires on its own.</p>
+    </div>
+    <div class="keys">
+      <div class="keyrow"><kbd>← → ↑ ↓</kbd> <kbd>WASD</kbd> Thrusters</div>
+      <div class="keyrow"><kbd>Space</kbd> Fire, hold to keep firing</div>
+      <div class="keyrow"><kbd>X</kbd> Detonate a nuke</div>
+      <div class="keyrow"><kbd>P</kbd> <kbd>Esc</kbd> Pause</div>
+      <div class="keyrow"><kbd>M</kbd> Mute</div>
+      <div class="keyrow"><kbd>Drag</kbd> Touch: move and auto-fire</div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>The swarm is already inbound</h2>
+    <p>No install, no account, no download. It runs in the tab you already have open, and remembers everything for next time.</p>
+    <div class="ctarow">
+      <a class="play" href="play.html">▶ Play Vector Siege</a>
+    </div>
+  </div>
+</section>
+
+<footer>Vector Siege · Built in a browser, plays in a browser</footer>
+
+<script>
+(() => {
+  "use strict";
+  const cv = document.getElementById('sky');
+  const ctx = cv.getContext('2d');
+  const header = cv.parentElement;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, stars = [], ships = [], shots = [], t = 0;
+
+  function size(){
+    const r = header.getBoundingClientRect();
+    W = Math.max(320, r.width); H = Math.max(320, r.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    build();
+  }
+
+  function build(){
+    stars = [];
+    for (let i = 0; i < 130; i++){
+      const l = i < 70 ? 0 : i < 108 ? 1 : 2;
+      stars.push({ x: Math.random()*W, y: Math.random()*H, l,
+                   r: l === 0 ? 0.7 : l === 1 ? 1.1 : 1.7,
+                   sp: l === 0 ? 14 : l === 1 ? 32 : 62 });
+    }
+  }
+
+  const COLS = ['#FF2E88', '#FF7A3D', '#B36BFF', '#6BF2A0', '#7FB4FF'];
+
+  function spawn(){
+    if (ships.length > 5) return;
+    const kind = Math.random();
+    ships.push({
+      x: 40 + Math.random() * (W - 80),
+      y: -30,
+      vy: 26 + Math.random() * 30,
+      sway: 18 + Math.random() * 30,
+      ph: Math.random() * 6.28,
+      col: COLS[(Math.random() * COLS.length) | 0],
+      spin: (Math.random() - 0.5) * 0.7,
+      kind: kind < 0.4 ? 0 : kind < 0.75 ? 1 : 2,
+      cd: 1.4 + Math.random() * 2.4,
+      t: 0
+    });
+  }
+
+  function step(dt){
+    t += dt;
+    for (const s of stars){
+      s.y += s.sp * dt;
+      if (s.y > H){ s.y = -2; s.x = Math.random()*W; }
+    }
+    if (Math.random() < dt * 0.85) spawn();
+    for (let i = ships.length - 1; i >= 0; i--){
+      const s = ships[i];
+      s.t += dt;
+      s.y += s.vy * dt;
+      s.x += Math.cos(s.t * 1.6 + s.ph) * s.sway * dt;
+      s.cd -= dt;
+      if (s.cd <= 0 && s.kind === 2 && s.y > 30 && s.y < H - 60){
+        s.cd = 1.8 + Math.random();
+        shots.push({ x: s.x, y: s.y + 12, vy: 96, col: s.col });
+      }
+      if (s.y > H + 40) ships.splice(i, 1);
+    }
+    for (let i = shots.length - 1; i >= 0; i--){
+      const b = shots[i];
+      b.y += b.vy * dt;
+      if (b.y > H + 20) shots.splice(i, 1);
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#070B1B';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = 'rgba(23,34,76,0.55)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let y = 0; y <= H; y += 60){ ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    for (let x = 0; x <= W; x += 60){ ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    ctx.stroke();
+
+    for (const s of stars){
+      ctx.globalAlpha = s.l === 0 ? 0.3 : s.l === 1 ? 0.55 : 0.9;
+      ctx.fillStyle = s.l === 2 ? '#BFE9FF' : '#8FA4D8';
+      ctx.fillRect(s.x, s.y, s.r, s.r * (s.l === 2 ? 2.2 : 1.5));
+    }
+    ctx.globalAlpha = 1;
+
+    for (const b of shots){
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.shadowColor = b.col; ctx.shadowBlur = 10;
+      ctx.fillStyle = b.col;
+      ctx.beginPath();
+      ctx.moveTo(0, -7); ctx.lineTo(4, 0); ctx.lineTo(0, 7); ctx.lineTo(-4, 0);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+
+    for (const s of ships){
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(Math.sin(s.t * 1.8) * 0.16 + s.spin * 0.2);
+      ctx.shadowColor = s.col; ctx.shadowBlur = 13;
+      ctx.strokeStyle = s.col; ctx.lineWidth = 1.6;
+      ctx.fillStyle = 'rgba(12,18,40,0.85)';
+      ctx.beginPath();
+      if (s.kind === 0){
+        ctx.moveTo(0, 11); ctx.lineTo(11, -5); ctx.lineTo(4, -9); ctx.lineTo(-4, -9); ctx.lineTo(-11, -5);
+      } else if (s.kind === 1){
+        ctx.moveTo(0, -14); ctx.lineTo(12, 7); ctx.lineTo(-12, 7);
+      } else {
+        for (let i = 0; i < 6; i++){
+          const a = Math.PI/6 + i * Math.PI/3;
+          const px = Math.cos(a) * 13, py = Math.sin(a) * 13;
+          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+        }
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.shadowBlur = 5;
+      ctx.fillStyle = s.col;
+      ctx.beginPath(); ctx.arc(0, s.kind === 1 ? 1 : -1, 2.2, 0, 6.3); ctx.fill();
+      ctx.restore();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  let last = performance.now();
+  function loop(now){
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    step(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  size();
+  window.addEventListener('resize', size);
+  // a still, populated frame even when motion is off
+  for (let i = 0; i < 4; i++){ spawn(); ships[ships.length-1].y = Math.random() * H * 0.7; }
+  if (reduce){ step(0); draw(); }
+  else requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
